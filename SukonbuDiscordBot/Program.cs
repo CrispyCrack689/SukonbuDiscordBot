@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Reflection;
 using Discord;
-using Discord.Commands;
 using Discord.WebSocket;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using System.IO;
 
@@ -15,7 +12,7 @@ namespace SukonbuDiscordBot
         private DiscordSocketClient _client;
         private ulong _channelId;
 
-        static void Main(string[] args) => new Program().MainAsync().GetAwaiter().GetResult();
+        static void Main() => new Program().MainAsync().GetAwaiter().GetResult();
 
         public async Task MainAsync()
         {
@@ -31,7 +28,7 @@ namespace SukonbuDiscordBot
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
 
-            // ボットが終了しないように待機
+            // ループさせる
             await Task.Delay(-1);
         }
 
@@ -55,7 +52,7 @@ namespace SukonbuDiscordBot
         /// <returns></returns>
         private async Task UserVoiceStateUpdated(SocketUser user, SocketVoiceState before, SocketVoiceState after)
         {
-            // ユーザーがボイスチャンネルに入室したとき
+            // ユーザーがボイスチャンネルに入室した
             if (before.VoiceChannel == null && after.VoiceChannel != null)
             {
                 if (_client.GetChannel(_channelId) is IMessageChannel channel)
