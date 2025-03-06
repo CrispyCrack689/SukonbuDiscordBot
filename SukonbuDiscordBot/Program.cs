@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -7,38 +8,38 @@ using System.IO;
 
 namespace SukonbuDiscordBot
 {
-    class Program
+    internal class Program
     {
-        private DiscordSocketClient _client;
-        private ulong _channelIdVoice;
-        private ulong _channelIdChat;
+        private DiscordSocketClient m_client;
+        private ulong m_channelIdVoice;
+        private ulong m_channelIdChat;
 
         private static void Main() => new Program().MainAsync().GetAwaiter().GetResult();
 
-        public async Task MainAsync()
+        private async Task MainAsync()
         {
             // 初期化
-            DiscordSocketConfig config = new DiscordSocketConfig
+            var config = new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Info,
                 GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages | GatewayIntents.GuildVoiceStates | GatewayIntents.MessageContent
             };
-            _client = new DiscordSocketClient(config);
+            m_client = new DiscordSocketClient(config);
 
             // イベントハンドラを設定
-            _client.Log += Log;
-            _client.UserVoiceStateUpdated += UserVoiceStateUpdated;
-            _client.MessageReceived += ChatBotAsync;
+            m_client.Log += Log;
+            m_client.UserVoiceStateUpdated += UserVoiceStateUpdated;
+            m_client.MessageReceived += ChatBotAsync;
 
             // 設定ファイルを読み込む
             var setting = JObject.Parse(File.ReadAllText("data/settings.json"));
-            var token = setting["BotToken"].ToString();
-            _channelIdVoice = ulong.Parse(setting["ChannelId_Voice"].ToString());
-            _channelIdChat = ulong.Parse(setting["ChannelId_Chat"].ToString());
+            var token = setting["BotToken"]?.ToString();
+            m_channelIdVoice = ulong.Parse(setting["ChannelId_Voice"]?.ToString() ?? throw new InvalidOperationException());
+            m_channelIdChat = ulong.Parse(setting["ChannelId_Chat"]?.ToString() ?? throw new InvalidOperationException());
 
             // ログイン
-            await _client.LoginAsync(TokenType.Bot, token);
-            await _client.StartAsync();
+            await m_client.LoginAsync(TokenType.Bot, token);
+            await m_client.StartAsync();
 
             // 準備完了するまで待機
             await Task.Delay(1000);
@@ -67,7 +68,7 @@ namespace SukonbuDiscordBot
         /// <returns></returns>
         private async Task UserVoiceStateUpdated(SocketUser user, SocketVoiceState before, SocketVoiceState after)
         {
-            if (_client.GetChannel(_channelIdVoice) is IMessageChannel channel)
+            if (m_client.GetChannel(m_channelIdVoice) is IMessageChannel channel)
             {
                 // ユーザーがボイスチャンネルに入室した
                 if (before.VoiceChannel == null && after.VoiceChannel != null)
@@ -92,26 +93,29 @@ namespace SukonbuDiscordBot
             // ボット自身のメッセージは無視
             // 特定チャンネル以外は無視
             if (message.Author.IsBot) return;
-            if (message.Channel.Id != _channelIdChat) return;
+            if (message.Channel.Id != m_channelIdChat) return;
 
-            if (_client.GetChannel(_channelIdChat) is IMessageChannel channel)
+            if (m_client.GetChannel(m_channelIdChat) is IMessageChannel channel)
             {
-                // コマンド一覧
-                if (message.Content == "help")
+                switch (message.Content)
                 {
-                    await channel.SendMessageAsync(
-                        "・members birthday\n" +
-                        "・すこんぶ"
-                    );
-                }
+                    // コマンド一覧
+                    case "help":
+                        await channel.SendMessageAsync(
+                            "・members birthday\n" +
+                            "・すこんぶ"
+                        );
+                        break;
+                    // メンバーの誕生日
+                    case "members birthday":
+                    {
+                        var birthday = JObject.Parse(File.ReadAllText("data/birthdays.json"));
+                        var birthdayResponse = birthday["Birthdays"];
 
-                // メンバーの誕生日
-                if (message.Content == "members birthday")
-                {
-                    var birthday = JObject.Parse(File.ReadAllText("data/birthdays.json"));
-                    var birthdayResponse = birthday["Birthdays"];
-
-                    await channel.SendMessageAsync(birthdayResponse.ToString());
+                        Debug.Assert(birthdayResponse != null, nameof(birthdayResponse) + " != null");
+                        await channel.SendMessageAsync(birthdayResponse.ToString());
+                        break;
+                    }
                 }
             }
         }
