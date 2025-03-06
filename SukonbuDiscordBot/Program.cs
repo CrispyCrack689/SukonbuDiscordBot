@@ -53,7 +53,7 @@ namespace SukonbuDiscordBot
         /// </summary>
         /// <param name="message">コンソールメッセージ</param>
         /// <returns></returns>
-        private Task Log(LogMessage message)
+        private static Task Log(LogMessage message)
         {
             Console.WriteLine(message.ToString());
             return Task.CompletedTask;
