@@ -109,6 +109,9 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TextChat\TextChatReply.cs" />
+    <Compile Include="Utils\Utils.cs" />
+    <Compile Include="VoiceChat\VoiceChatNotify.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
