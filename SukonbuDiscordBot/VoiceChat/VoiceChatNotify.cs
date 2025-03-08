@@ -20,11 +20,11 @@ namespace SukonbuDiscordBot.VoiceChat
         /// <param name="before">直前のVC状態</param>
         /// <param name="after">直後のVC状態</param>
         /// <returns></returns>
-        public static async Task UserVoiceStateUpdated(DiscordSocketClient client, SocketUser user, SocketVoiceState before, SocketVoiceState after)
+        public static async Task UserVoiceStateUpdateAsync(DiscordSocketClient client, SocketUser user, SocketVoiceState before, SocketVoiceState after)
         {
             // ボイスチャンネルのIDを取得
-            var setting = JObject.Parse(File.ReadAllText(NS_.Settings.SETTINGS_FILE));
-            var channelIdVoice = ulong.Parse(setting["ChannelId_Voice"].ToString());
+            var setting = JObject.Parse(File.ReadAllText(NS_.ExternalFiles.SETTINGS_FILE));
+            var channelIdVoice = ulong.Parse(setting[NS_.ExternalFiles.CHANNEL_ID_VOICE].ToString());
 
             if (client.GetChannel(channelIdVoice) is IMessageChannel channel)
             {

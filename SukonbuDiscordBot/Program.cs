@@ -10,9 +10,15 @@ using SukonbuDiscordBot.VoiceChat;
 
 namespace NS_
 {
-    public static class Settings
+    public static class ExternalFiles
     {
         public const string SETTINGS_FILE = "data/settings.json";
+        public const string BIRTHDAYS_FILE = "data/birthdays.json";
+
+        public const string TOKEN = "BotToken";
+
+        public const string CHANNEL_ID_CHAT = "ChannelId_Chat";
+        public const string CHANNEL_ID_VOICE = "ChannelId_Voice";
     }
 }
 
@@ -37,12 +43,12 @@ namespace SukonbuDiscordBot
 
             // イベントハンドラを設定
             m_client.Log += TraceLog.Log;
-            m_client.UserVoiceStateUpdated += (user, before, after) => VoiceChatNotify.UserVoiceStateUpdated(m_client, user, before, after);
+            m_client.UserVoiceStateUpdated += (user, before, after) => VoiceChatNotify.UserVoiceStateUpdateAsync(m_client, user, before, after);
             m_client.MessageReceived += (message) => TextChatReply.ChatBotAsync(m_client, message);
 
             // 設定ファイルを読み込む
-            var setting = JObject.Parse(File.ReadAllText("data/settings.json"));
-            var token = setting["BotToken"].ToString();
+            var setting = JObject.Parse(File.ReadAllText(NS_.ExternalFiles.SETTINGS_FILE));
+            var token = setting[NS_.ExternalFiles.TOKEN].ToString();
 
             // ログイン
             await m_client.LoginAsync(TokenType.Bot, token);

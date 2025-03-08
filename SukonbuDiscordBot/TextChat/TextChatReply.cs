@@ -9,6 +9,8 @@ namespace SukonbuDiscordBot.TextChat
 {
     internal abstract class TextChatReply
     {
+        //TODO:要改修
+
         /// <summary>
         /// チャットボット
         /// </summary>
@@ -18,8 +20,8 @@ namespace SukonbuDiscordBot.TextChat
         public static async Task ChatBotAsync(DiscordSocketClient client, SocketMessage message)
         {
             // テキストチャンネルのIDを取得
-            var setting = JObject.Parse(File.ReadAllText(NS_.Settings.SETTINGS_FILE));
-            var channelIdChat = ulong.Parse(setting["ChannelId_Chat"].ToString());
+            var setting = JObject.Parse(File.ReadAllText(NS_.ExternalFiles.SETTINGS_FILE));
+            var channelIdChat = ulong.Parse(setting[NS_.ExternalFiles.CHANNEL_ID_CHAT].ToString());
 
             // ボット自身のメッセージは無視
             // 特定チャンネル以外は無視
@@ -30,23 +32,21 @@ namespace SukonbuDiscordBot.TextChat
             {
                 switch (message.Content)
                 {
-                    // コマンド一覧
-                    case "help":
-                        await channel.SendMessageAsync(
-                            "・members birthday\n" +
-                            "・すこんぶ"
-                        );
-                        break;
-                    // メンバーの誕生日
-                    case "members birthday":
-                    {
-                        var birthday = JObject.Parse(File.ReadAllText("data/birthdays.json"));
-                        var birthdayResponse = birthday["Birthdays"];
+                // コマンド一覧
+                case "help":
+                    await channel.SendMessageAsync(
+                        "・members birthday\n" +
+                        "・すこんぶ"
+                    );
+                    break;
+                // メンバーの誕生日
+                case "members birthday":
+                    var birthday = JObject.Parse(File.ReadAllText(NS_.ExternalFiles.BIRTHDAYS_FILE));
+                    var birthdayResponse = birthday["Birthdays"];
 
-                        Debug.Assert(birthdayResponse != null, nameof(birthdayResponse) + " != null");
-                        await channel.SendMessageAsync(birthdayResponse.ToString());
-                        break;
-                    }
+                    Debug.Assert(birthdayResponse != null, nameof(birthdayResponse) + " != null");
+                    await channel.SendMessageAsync(birthdayResponse.ToString());
+                    break;
                 }
             }
         }
