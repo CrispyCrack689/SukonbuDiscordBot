@@ -34,6 +34,12 @@ namespace SukonbuDiscordBot.VoiceChat
                 // ユーザーがボイスチャンネルに入室した
                 if (before.VoiceChannel == null && after.VoiceChannel != null)
                 {
+                    // すでにユーザーが通話中の場合は無視
+                    if (after.VoiceChannel.ConnectedUsers.Count > 1)
+                    {
+                        return;
+                    }
+
                     m_voiceStartTimes[user.Id] = DateTime.Now;
 
                     var channelName = after.VoiceChannel.Name;
