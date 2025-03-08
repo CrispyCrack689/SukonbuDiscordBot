@@ -62,6 +62,7 @@ namespace SukonbuDiscordBot.VoiceChat
 
                     if (!m_voiceStartTimes.TryGetValue(user.Id, out var startTime))
                     {
+                        // 通話開始時間が取得できなかった
                         throw new InvalidOperationException("Coudn't get chat start time.");
                     }
 
