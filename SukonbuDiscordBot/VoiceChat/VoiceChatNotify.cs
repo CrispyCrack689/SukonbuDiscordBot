@@ -34,6 +34,12 @@ namespace SukonbuDiscordBot.VoiceChat
                 // ユーザーがボイスチャンネルに入室した
                 if (before.VoiceChannel == null && after.VoiceChannel != null)
                 {
+                    // すでにユーザーが通話中の場合は無視
+                    if (after.VoiceChannel.ConnectedUsers.Count > 1)
+                    {
+                        return;
+                    }
+
                     m_voiceStartTimes[user.Id] = DateTime.Now;
 
                     var channelName = after.VoiceChannel.Name;
@@ -54,38 +60,41 @@ namespace SukonbuDiscordBot.VoiceChat
                 {
                     var endTime = DateTime.Now;
 
-                    if (m_voiceStartTimes.TryGetValue(user.Id, out var startTime))
+                    if (!m_voiceStartTimes.TryGetValue(user.Id, out var startTime))
                     {
-                        var channelName = before.VoiceChannel.Name;
-                        var duration = endTime - startTime;
-                        m_voiceStartTimes.Remove(user.Id);
-
-                        // 2桁表示にする
-                        var durationHours = duration.Hours.ToString();
-                        if (durationHours.Length <= 1)
-                        {
-                            durationHours = "0" + durationHours;
-                        }
-                        var durationMinutes = duration.Minutes.ToString();
-                        if (durationMinutes.Length <= 1)
-                        {
-                            durationMinutes = "0" + durationMinutes;
-                        }
-                        var durationSeconds = duration.Seconds.ToString();
-                        if (durationSeconds.Length <= 1)
-                        {
-                            durationSeconds = "0" + durationSeconds;
-                        }
-
-                        var embed = new EmbedBuilder()
-                            .WithTitle("通話終了")
-                            .AddField("**`チャンネル`**", channelName, true)
-                            .AddField("**`通話時間`**", $"{durationHours}:{durationMinutes}:{durationSeconds}", true)
-                            .WithColor(0x8e8eff)
-                            .Build();
-
-                        await channel.SendMessageAsync(embed: embed);
+                        // 通話開始時間が取得できなかった
+                        throw new InvalidOperationException("Coudn't get chat start time.");
                     }
+
+                    var channelName = before.VoiceChannel.Name;
+                    var duration = endTime - startTime;
+                    m_voiceStartTimes.Remove(user.Id);
+
+                    // 2桁表示にする
+                    var durationHours = duration.Hours.ToString();
+                    if (durationHours.Length <= 1)
+                    {
+                        durationHours = "0" + durationHours;
+                    }
+                    var durationMinutes = duration.Minutes.ToString();
+                    if (durationMinutes.Length <= 1)
+                    {
+                        durationMinutes = "0" + durationMinutes;
+                    }
+                    var durationSeconds = duration.Seconds.ToString();
+                    if (durationSeconds.Length <= 1)
+                    {
+                        durationSeconds = "0" + durationSeconds;
+                    }
+
+                    var embed = new EmbedBuilder()
+                        .WithTitle("通話終了")
+                        .AddField("**`チャンネル`**", channelName, true)
+                        .AddField("**`通話時間`**", $"{durationHours}:{durationMinutes}:{durationSeconds}", true)
+                        .WithColor(0x8e8eff)
+                        .Build();
+
+                    await channel.SendMessageAsync(embed: embed);
                 }
             }
         }

@@ -12,6 +12,7 @@ namespace NS_
 {
     public static class ExternalFiles
     {
+        public const string TOKEN_FILE = "data/token.json";
         public const string SETTINGS_FILE = "data/settings.json";
         public const string BIRTHDAYS_FILE = "data/birthdays.json";
 
@@ -47,7 +48,7 @@ namespace SukonbuDiscordBot
             m_client.MessageReceived += (message) => TextChatReply.ChatBotAsync(m_client, message);
 
             // 設定ファイルを読み込む
-            var setting = JObject.Parse(File.ReadAllText(NS_.ExternalFiles.SETTINGS_FILE));
+            var setting = JObject.Parse(File.ReadAllText(NS_.ExternalFiles.TOKEN_FILE));
             var token = setting[NS_.ExternalFiles.TOKEN].ToString();
 
             // ログイン
