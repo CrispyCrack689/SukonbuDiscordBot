@@ -20,6 +20,8 @@ namespace NS_
 
         public const string CHANNEL_ID_CHAT = "ChannelId_Chat";
         public const string CHANNEL_ID_VOICE = "ChannelId_Voice";
+
+        public const string CHANNEL_ID_WATCH_VOICE = "ChannelId_WatchVoice";
     }
 }
 

@@ -6,6 +6,8 @@ using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
+using SukonbuDiscordBot.Utils;
+
 namespace SukonbuDiscordBot.VoiceChat
 {
     internal abstract class VoiceChatNotify
@@ -22,18 +24,27 @@ namespace SukonbuDiscordBot.VoiceChat
         /// <returns></returns>
         public static async Task UserVoiceStateUpdateAsync(DiscordSocketClient client, SocketUser user, SocketVoiceState before, SocketVoiceState after)
         {
-            // ボイスチャンネルのIDを取得
             var setting = JObject.Parse(File.ReadAllText(NS_.ExternalFiles.SETTINGS_FILE));
+            // ボイス通知チャンネルのIDを取得
             var channelIdVoice = ulong.Parse(setting[NS_.ExternalFiles.CHANNEL_ID_VOICE].ToString());
+            // 監視対象のボイスチャンネルを取得
+            var channelIdWatchVoice = setting[NS_.ExternalFiles.CHANNEL_ID_WATCH_VOICE].ToObject<List<ulong>>();
 
             if (client.GetChannel(channelIdVoice) is IMessageChannel channel)
             {
                 var userName = user.Username;
                 var avatarUrl = user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl();
 
-                // ユーザーがボイスチャンネルに入室した
                 if (before.VoiceChannel == null && after.VoiceChannel != null)
                 {
+                    // ユーザーがボイスチャンネルに入室した
+
+                    // 対象のボイスチャンネルでなければ無視
+                    if (!channelIdWatchVoice.Contains(after.VoiceChannel.Id))
+                    {
+                        return;
+                    }
+
                     // すでにユーザーが通話中の場合は無視
                     if (after.VoiceChannel.ConnectedUsers.Count > 1)
                     {
@@ -58,12 +69,15 @@ namespace SukonbuDiscordBot.VoiceChat
                 }
                 else if (before.VoiceChannel != null && after.VoiceChannel == null)
                 {
+                    // ユーザーがボイスチャンネルから退出した
+
                     var endTime = DateTime.Now;
 
                     if (!m_voiceStartTimes.TryGetValue(user.Id, out var startTime))
                     {
                         // 通話開始時間が取得できなかった
-                        throw new InvalidOperationException("Coudn't get chat start time.");
+                        await TraceLog.Log(new LogMessage(LogSeverity.Info, "Trace", $"Coudn't get chat start time: {before.VoiceChannel.Name}"));
+                        return;
                     }
 
                     var channelName = before.VoiceChannel.Name;
