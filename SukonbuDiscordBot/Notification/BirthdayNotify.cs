@@ -18,6 +18,11 @@ namespace SukonbuDiscordBot.Notification
             public DateTime Birthday { get; set; }
         }
 
+        /// <summary>
+        /// 本日誕生日のユーザーを通知
+        /// </summary>
+        /// <param name="client">クライアント</param>
+        /// <returns></returns>
         public static async Task NotifyTodayIsMyBirthdayAsync(DiscordSocketClient client)
         {
             string filePath = NS_.ExternalFiles.BIRTHDAYS_FILE;
@@ -36,6 +41,11 @@ namespace SukonbuDiscordBot.Notification
             }
         }
 
+        /// <summary>
+        /// 誕生日リストを読み込む
+        /// </summary>
+        /// <param name="filePath">ファイルパス</param>
+        /// <returns></returns>
         private static async Task<List<UserBirthday>> ReadUserBirthdaysFromJsonAsync(string filePath)
         {
             using (StreamReader reader = new StreamReader(filePath))

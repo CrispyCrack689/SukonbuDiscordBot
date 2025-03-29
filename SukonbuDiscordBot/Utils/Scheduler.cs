@@ -14,7 +14,7 @@ namespace SukonbuDiscordBot.Utils
         /// <param name="hour">時</param>
         /// <param name="minute">分</param>
         /// <param name="task">実行するタスク</param>
-        public void ScheduleDailyTask(int hour, int minute, Func<Task> task)
+        public void ScheduleDailyTaskAsync(int hour, int minute, Func<Task> task)
         {
             // 実行タイミングを設定
             var now = DateTime.Now;
@@ -31,7 +31,7 @@ namespace SukonbuDiscordBot.Utils
                 {
                     // タスクを実行
                     await task.Invoke();
-                    ScheduleDailyTask(hour, minute, task);
+                    ScheduleDailyTaskAsync(hour, minute, task);
                 }, 
                 null,
                 timeToGo,

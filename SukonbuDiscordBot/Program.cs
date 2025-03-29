@@ -78,7 +78,7 @@ namespace SukonbuDiscordBot
             // note: 今は試験機能
 #if DEBUG
             Scheduler scheduler = new Scheduler();
-            scheduler.ScheduleDailyTask(NS_.Constants.DAILY_TASK_HOUR, NS_.Constants.DAILY_TASK_MINUTE, async () => await Notification.BirthdayNotify.NotifyTodayIsMyBirthdayAsync(m_client));
+            scheduler.ScheduleDailyTaskAsync(NS_.Constants.DAILY_TASK_HOUR, NS_.Constants.DAILY_TASK_MINUTE, async () => await Notification.BirthdayNotify.NotifyTodayIsMyBirthdayAsync(m_client));
 #endif
 
             // ループさせる
