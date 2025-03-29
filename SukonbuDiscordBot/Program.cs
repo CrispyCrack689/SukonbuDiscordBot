@@ -10,6 +10,9 @@ using SukonbuDiscordBot.VoiceChat;
 
 namespace NS_
 {
+    /// <summary>
+    /// 外部ファイルパスをまとめる
+    /// </summary>
     public static class ExternalFiles
     {
         public const string TOKEN_FILE = "data/token.json";
@@ -20,8 +23,20 @@ namespace NS_
 
         public const string CHANNEL_ID_CHAT = "ChannelId_Chat";
         public const string CHANNEL_ID_VOICE = "ChannelId_Voice";
+        public const string CHANNEL_ID_INFO = "ChannelId_Info";
 
         public const string CHANNEL_ID_WATCH_VOICE = "ChannelId_WatchVoice";
+    };
+
+    /// <summary>
+    /// 定数をまとめる
+    /// note: ほんとはシングルトンにしたほうがいいのかも
+    /// </summary>
+    public static class Constants
+    {
+        public const int START_DELAY = 1000;
+        public const int DAILY_TASK_HOUR = 9;
+        public const int DAILY_TASK_MINUTE = 0;
     }
 }
 
@@ -39,8 +54,7 @@ namespace SukonbuDiscordBot
             var config = new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Info,
-                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages |
-                                 GatewayIntents.GuildVoiceStates | GatewayIntents.MessageContent
+                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages | GatewayIntents.GuildVoiceStates | GatewayIntents.MessageContent
             };
             m_client = new DiscordSocketClient(config);
 
@@ -58,7 +72,14 @@ namespace SukonbuDiscordBot
             await m_client.StartAsync();
 
             // 準備完了するまで待機
-            await Task.Delay(1000);
+            await Task.Delay(NS_.Constants.START_DELAY);
+
+            // 定期実行タスク
+            // note: 今は試験機能
+#if DEBUG
+            Scheduler scheduler = new Scheduler();
+            scheduler.ScheduleDailyTask(NS_.Constants.DAILY_TASK_HOUR, NS_.Constants.DAILY_TASK_MINUTE, async () => await Notification.BirthdayNotify.NotifyTodayIsMyBirthdayAsync(m_client));
+#endif
 
             // ループさせる
             await Task.Delay(-1);
