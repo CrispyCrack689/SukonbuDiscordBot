@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs_on: windows-latest
+    runs-on: windows-latest
 
     steps:
       - name: Checkout code
@@ -29,6 +29,6 @@ jobs:
       - name: Archive build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifacts
+          name: SukonbuDiscordBot-${{ github.ref_name }}
           path: |
             **/bin/Release/
