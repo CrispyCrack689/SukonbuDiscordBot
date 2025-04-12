@@ -1,0 +1,34 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs_on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET Framework
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: Restore NuGet packages
+        run: nuget restore SukonbuDiscordBot.sln
+
+      - name: Build solution
+        run: msbuild SukonbuDiscordBot.sln /p:Configuration=Release
+
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            **/bin/Release/
