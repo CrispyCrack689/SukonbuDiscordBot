@@ -1,10 +1,9 @@
-name: Build
+name: PR Build Check
 
 on:
-  workflow_dispatch:
-  push:
-    tags:
-      - '*'
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
@@ -25,10 +24,3 @@ jobs:
 
       - name: Build solution
         run: msbuild SukonbuDiscordBot.sln /p:Configuration=Release
-
-      - name: Archive build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: SukonbuDiscordBot-${{ github.ref_name }}
-          path: |
-            **/bin/Release/

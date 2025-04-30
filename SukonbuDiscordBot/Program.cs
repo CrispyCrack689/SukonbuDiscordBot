@@ -30,7 +30,6 @@ namespace NS_
 
     /// <summary>
     /// 定数をまとめる
-    /// note: ほんとはシングルトンにしたほうがいいのかも
     /// </summary>
     public static class Constants
     {
