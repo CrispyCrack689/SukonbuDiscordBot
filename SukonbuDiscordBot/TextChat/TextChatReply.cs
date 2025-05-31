@@ -47,6 +47,8 @@ namespace SukonbuDiscordBot.TextChat
                     Debug.Assert(birthdayResponse != null, nameof(birthdayResponse) + " != null");
                     await channel.SendMessageAsync(birthdayResponse.ToString());
                     break;
+                default:
+                    break;
                 }
             }
         }
