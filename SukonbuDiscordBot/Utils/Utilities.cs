@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 
 namespace SukonbuDiscordBot.Utils
 {
@@ -19,6 +20,34 @@ namespace SukonbuDiscordBot.Utils
                 {
                     try
                     {
+                        // プロセスのパスを取得
+                        string currentPath = current.MainModule.FileName;
+                        string otherPath = null;
+                        try
+                        {
+                            otherPath = process.MainModule.FileName;
+                        }
+                        catch
+                        {
+                            continue;
+                        }
+
+                        // 同じexeか
+                        if (!string.Equals(currentPath, otherPath, StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
+
+                        // なるべくそっ閉じする
+                        if (process.CloseMainWindow())
+                        {
+                            if (process.WaitForExit(5000))
+                            {
+                                continue;
+                            }
+                        }
+
+                        // 無理ならしかたなし
                         process.Kill();
                         process.WaitForExit();
                     }
