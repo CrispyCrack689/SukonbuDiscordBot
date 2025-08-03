@@ -7,8 +7,8 @@ namespace SukonbuDiscordBot.Utils
 {
     internal static class TraceLog
     {
-        private static readonly string LogFilePath = $"data/log/SukonbuDiscordBot_{DateTime.Now:yyyyMMdd}.log";
-        private static readonly object LogLock = new object();
+        private static readonly string m_logFilePath = $"data/log/SukonbuDiscordBot_{DateTime.Now:yyyyMMdd}.log";
+        private static readonly object m_logLock = new object();
 
         /// <summary>
         /// ログ出力
@@ -23,10 +23,10 @@ namespace SukonbuDiscordBot.Utils
             // ファイルに追記
             try
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(LogFilePath));
-                lock (LogLock)
+                Directory.CreateDirectory(Path.GetDirectoryName(m_logFilePath));
+                lock (m_logLock)
                 {
-                    File.AppendAllText(LogFilePath, $"{DateTime.Now}: {message}\n");
+                    File.AppendAllText(m_logFilePath, $"{DateTime.Now}: {message}\n");
                 }
             }
             catch (Exception ex)
