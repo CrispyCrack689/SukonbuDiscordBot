@@ -2,8 +2,8 @@
 using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
 using SukonbuDiscordBot.TextChat;
-using SukonbuDiscordBot.Utils;
 using SukonbuDiscordBot.VoiceChat;
+using SukonbuDiscordBot.Utils;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -26,6 +26,12 @@ namespace NS_
         public const string CHANNEL_ID_INFO = "ChannelId_Info";
 
         public const string CHANNEL_ID_WATCH_VOICE = "ChannelId_WatchVoice";
+
+#if DEBUG
+        public const string GOFILE_WORKING_DIRECTORY = "GoFile_WorkingDirectory";
+        public const string GOFILE_SCRIPT_PATH = "GoFile_ScriptPath";
+        public const string GOFILE_VENV_PYTHON_PATH = "GoFile_VenvPythonPath";
+#endif
     };
 
     /// <summary>
@@ -50,6 +56,7 @@ namespace SukonbuDiscordBot
         private async Task MainAsync()
         {
             // 初期化
+            Utilities.KillOtherInstances();
             var config = new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Info,
@@ -68,6 +75,9 @@ namespace SukonbuDiscordBot
             m_client.Log += TraceLog.Log;
             m_client.UserVoiceStateUpdated += (user, before, after) => VoiceChatNotify.UserVoiceStateUpdateAsync(m_client, user, before, after);
             m_client.MessageReceived += (message) => TextChatReply.ChatBotAsync(m_client, message);
+#if DEBUG
+            m_client.MessageReceived += (messageDebug) => Internals.GoFileDownload(m_client, messageDebug);
+#endif
 
             // 設定ファイルを読み込む
             var tokenFile = JObject.Parse(File.ReadAllText(NS_.ExternalFiles.TOKEN_FILE));
