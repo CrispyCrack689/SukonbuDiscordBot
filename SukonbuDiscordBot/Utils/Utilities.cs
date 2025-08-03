@@ -24,7 +24,7 @@ namespace SukonbuDiscordBot.Utils
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"An error occurred: {ex.Message}");
+                        Console.WriteLine($"An error occurred while trying to terminate process (ID: {process.Id}, Name: {process.ProcessName}): {ex.Message}");
                     }
                 }
             }
