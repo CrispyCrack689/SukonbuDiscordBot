@@ -2,8 +2,8 @@
 using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
 using SukonbuDiscordBot.TextChat;
-using SukonbuDiscordBot.VoiceChat;
 using SukonbuDiscordBot.Utils;
+using SukonbuDiscordBot.VoiceChat;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -67,7 +67,7 @@ namespace SukonbuDiscordBot
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
 
             // イベントハンドラを設定
-            m_client.Log += TraceLog.Log;
+            m_client.Log += (logMessage) => Log.Trace(logMessage.Severity, logMessage.ToString());
             m_client.UserVoiceStateUpdated += (user, before, after) => VoiceChatNotify.UserVoiceStateUpdateAsync(m_client, user, before, after);
             m_client.MessageReceived += (message) => TextChatReply.ChatBotAsync(m_client, message);
             m_client.MessageReceived += (messageDebug) => Internals.GoFileDownload(m_client, messageDebug);

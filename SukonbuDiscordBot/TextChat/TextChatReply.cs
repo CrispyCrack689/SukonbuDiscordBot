@@ -1,9 +1,9 @@
-﻿using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
-using Discord;
+﻿using Discord;
 using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
+using SukonbuDiscordBot.Utils;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace SukonbuDiscordBot.TextChat
 {
@@ -44,7 +44,7 @@ namespace SukonbuDiscordBot.TextChat
                     var birthday = JObject.Parse(File.ReadAllText(ExternalFiles.BIRTHDAYS_FILE));
                     var birthdayResponse = birthday["Birthdays"];
 
-                    Debug.Assert(birthdayResponse != null, nameof(birthdayResponse) + " != null");
+                    Assert.IsNotNull(birthdayResponse, nameof(birthdayResponse));
                     await channel.SendMessageAsync(birthdayResponse.ToString());
                     break;
                 default:

@@ -1,12 +1,11 @@
-﻿using Discord.WebSocket;
-using Discord;
+﻿using Discord;
+using Discord.WebSocket;
+using Newtonsoft.Json.Linq;
+using SukonbuDiscordBot.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-
-using SukonbuDiscordBot.Utils;
 
 namespace SukonbuDiscordBot.VoiceChat
 {
@@ -76,7 +75,7 @@ namespace SukonbuDiscordBot.VoiceChat
                     if (!m_voiceStartTimes.TryGetValue(user.Id, out var startTime))
                     {
                         // 通話開始時間が取得できなかった
-                        await TraceLog.Log(new LogMessage(LogSeverity.Info, "Trace", $"Coudn't get chat start time: {before.VoiceChannel.Name}"));
+                        await Log.Trace(LogSeverity.Info, $"Coudn't get chat start time: {before.VoiceChannel.Name}");
                         return;
                     }
 

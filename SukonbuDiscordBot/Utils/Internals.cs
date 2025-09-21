@@ -51,6 +51,7 @@ namespace SukonbuDiscordBot.Utils
 
                         if (!string.IsNullOrWhiteSpace(output))
                         {
+                            await Log.Trace(LogSeverity.Info, $"Download success: {message.Content}");
                             if (client.GetChannel(channelIdChat) is IMessageChannel channel)
                             {
                                 await channel.SendMessageAsync("Download success: " + message.Content);
@@ -58,13 +59,13 @@ namespace SukonbuDiscordBot.Utils
                         }
                         if (!string.IsNullOrWhiteSpace(error))
                         {
-                            await TraceLog.Log(new LogMessage(LogSeverity.Error, "Trace", $"ERROR: {error}"));
+                            await Log.Trace(LogSeverity.Error, $"ERROR: {error}");
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    await TraceLog.Log(new LogMessage(LogSeverity.Error, "Trace", $"ERROR: {ex.Message}"));
+                    await Log.Trace(LogSeverity.Error, $"ERROR: {ex.Message}");
                     if (client.GetChannel(channelIdChat) is IMessageChannel channel)
                     {
                         await channel.SendMessageAsync("Download failed: " + message.Content);
@@ -72,7 +73,6 @@ namespace SukonbuDiscordBot.Utils
                 }
             }
 #endif
-            await TraceLog.Log(new LogMessage(LogSeverity.Error, "Trace", "ERROR: Function 'GofileDownload' is undefined."));
         }
     }
 }

@@ -1,13 +1,12 @@
-﻿using System;
+﻿using Discord;
+using Discord.WebSocket;
+using Newtonsoft.Json;
+using SukonbuDiscordBot.Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-
-using Discord;
-using Discord.WebSocket;
-using System.Diagnostics;
 
 namespace SukonbuDiscordBot.Notification
 {
@@ -30,7 +29,7 @@ namespace SukonbuDiscordBot.Notification
             // 誕生日リスト取得
             string filePath = ExternalFiles.BIRTHDAYS_FILE;
             var userBirthdays = await ReadUserBirthdaysFromJsonAsync(filePath);
-            Debug.Assert(userBirthdays != null, nameof(userBirthdays) + " != null");
+            Assert.IsNotNull(userBirthdays, nameof(userBirthdays));
             // 本日誕生日の人を絞り込む
             var today = DateTime.Today;
             var birthdaysToday = userBirthdays
@@ -39,10 +38,10 @@ namespace SukonbuDiscordBot.Notification
 
             // チャネルを取得
             var channel = client.GetChannel(channelId) as SocketGuildChannel;
-            Debug.Assert(channel != null, nameof(channel) + " != null");
+            Assert.IsNotNull(channel, nameof(channel));
             // ユーザーを取得
             var guild = channel.Guild;
-            Debug.Assert(guild != null, nameof(guild) + " != null");
+            Assert.IsNotNull(guild, nameof(guild));
             await guild.DownloadUsersAsync();
 
             // ボットがいるチャネルの中に該当者がいれば祝福
