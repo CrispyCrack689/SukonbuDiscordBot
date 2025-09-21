@@ -16,8 +16,8 @@ namespace SukonbuDiscordBot.Utils
         {
 #if DEBUG
             // テキストチャンネルのIDを取得
-            var setting = JObject.Parse(File.ReadAllText(NS_.ExternalFiles.SETTINGS_FILE));
-            var channelIdChat = ulong.Parse(setting[NS_.ExternalFiles.CHANNEL_ID_CHAT].ToString());
+            var setting = JObject.Parse(File.ReadAllText(ExternalFiles.SETTINGS_FILE));
+            var channelIdChat = ulong.Parse(setting[ExternalFiles.CHANNEL_ID_CHAT].ToString());
 
             // ボット自身のメッセージは無視
             // 特定チャンネル以外は無視
@@ -27,16 +27,16 @@ namespace SukonbuDiscordBot.Utils
             if (message.Content.StartsWith(goFileUrlPrefix))
             {
                 var url = message.Content.Trim();
-                var settingsFile = JObject.Parse(File.ReadAllText(NS_.ExternalFiles.SETTINGS_FILE));
+                var settingsFile = JObject.Parse(File.ReadAllText(ExternalFiles.SETTINGS_FILE));
 
                 try
                 {
                     // gofile-downloader.pyでダウンロードする
                     var psi = new ProcessStartInfo
                     {
-                        FileName = settingsFile[NS_.ExternalFiles.CUSTOM_VENV_PYTHON_PATH].ToString(),
-                        Arguments = $"\"{settingsFile[NS_.ExternalFiles.CUSTOM_SCRIPT_PATH]}\" \"{url}\"",
-                        WorkingDirectory = settingsFile[NS_.ExternalFiles.CUSTOM_WORKING_DIRECTORY].ToString(),
+                        FileName = settingsFile[ExternalFiles.CUSTOM_VENV_PYTHON_PATH].ToString(),
+                        Arguments = $"\"{settingsFile[ExternalFiles.CUSTOM_SCRIPT_PATH]}\" \"{url}\"",
+                        WorkingDirectory = settingsFile[ExternalFiles.CUSTOM_WORKING_DIRECTORY].ToString(),
                         RedirectStandardOutput = true,
                         RedirectStandardError = true,
                         UseShellExecute = false,

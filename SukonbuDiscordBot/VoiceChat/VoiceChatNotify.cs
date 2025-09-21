@@ -24,11 +24,11 @@ namespace SukonbuDiscordBot.VoiceChat
         /// <returns></returns>
         public static async Task UserVoiceStateUpdateAsync(DiscordSocketClient client, SocketUser user, SocketVoiceState before, SocketVoiceState after)
         {
-            var setting = JObject.Parse(File.ReadAllText(NS_.ExternalFiles.SETTINGS_FILE));
+            var setting = JObject.Parse(File.ReadAllText(ExternalFiles.SETTINGS_FILE));
             // ボイス通知チャンネルのIDを取得
-            var channelIdVoice = ulong.Parse(setting[NS_.ExternalFiles.CHANNEL_ID_VOICE].ToString());
+            var channelIdVoice = ulong.Parse(setting[ExternalFiles.CHANNEL_ID_VOICE].ToString());
             // 監視対象のボイスチャンネルを取得
-            var channelIdWatchVoice = setting[NS_.ExternalFiles.CHANNEL_ID_WATCH_VOICE].ToObject<List<ulong>>();
+            var channelIdWatchVoice = setting[ExternalFiles.CHANNEL_ID_WATCH_VOICE].ToObject<List<ulong>>();
 
             if (client.GetChannel(channelIdVoice) is IMessageChannel channel)
             {

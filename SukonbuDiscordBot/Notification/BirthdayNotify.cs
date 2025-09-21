@@ -28,7 +28,7 @@ namespace SukonbuDiscordBot.Notification
         public static async Task NotifyTodayIsMyBirthdayAsync(DiscordSocketClient client, ulong channelId)
         {
             // 誕生日リスト取得
-            string filePath = NS_.ExternalFiles.BIRTHDAYS_FILE;
+            string filePath = ExternalFiles.BIRTHDAYS_FILE;
             var userBirthdays = await ReadUserBirthdaysFromJsonAsync(filePath);
 
             // 本日誕生日の人を絞り込む
