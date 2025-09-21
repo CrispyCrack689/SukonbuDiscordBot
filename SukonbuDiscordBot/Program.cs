@@ -27,11 +27,9 @@ namespace NS_
 
         public const string CHANNEL_ID_WATCH_VOICE = "ChannelId_WatchVoice";
 
-#if DEBUG
-        public const string GOFILE_WORKING_DIRECTORY = "GoFile_WorkingDirectory";
-        public const string GOFILE_SCRIPT_PATH = "GoFile_ScriptPath";
-        public const string GOFILE_VENV_PYTHON_PATH = "GoFile_VenvPythonPath";
-#endif
+        public const string CUSTOM_WORKING_DIRECTORY = "Custom_WorkingDirectory";
+        public const string CUSTOM_SCRIPT_PATH = "Custom_ScriptPath";
+        public const string CUSTOM_VENV_PYTHON_PATH = "Custom_VenvPythonPath";
     };
 
     /// <summary>
@@ -61,10 +59,10 @@ namespace SukonbuDiscordBot
             {
                 LogLevel = LogSeverity.Info,
                 GatewayIntents = GatewayIntents.Guilds
-                    | GatewayIntents.GuildMessages
-                    | GatewayIntents.GuildVoiceStates
-                    | GatewayIntents.MessageContent
-                    | GatewayIntents.GuildMembers
+                               | GatewayIntents.GuildMessages
+                               | GatewayIntents.GuildVoiceStates
+                               | GatewayIntents.MessageContent
+                               | GatewayIntents.GuildMembers
             };
             m_client = new DiscordSocketClient(config);
 
@@ -75,9 +73,7 @@ namespace SukonbuDiscordBot
             m_client.Log += TraceLog.Log;
             m_client.UserVoiceStateUpdated += (user, before, after) => VoiceChatNotify.UserVoiceStateUpdateAsync(m_client, user, before, after);
             m_client.MessageReceived += (message) => TextChatReply.ChatBotAsync(m_client, message);
-#if DEBUG
             m_client.MessageReceived += (messageDebug) => Internals.GoFileDownload(m_client, messageDebug);
-#endif
 
             // 設定ファイルを読み込む
             var tokenFile = JObject.Parse(File.ReadAllText(NS_.ExternalFiles.TOKEN_FILE));

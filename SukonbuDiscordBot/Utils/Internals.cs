@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace SukonbuDiscordBot.Utils
 {
-#if DEBUG
     internal class Internals
     {
         private static readonly string goFileUrlPrefix = "https://gofile.io/d/";
 
         public static async Task GoFileDownload(DiscordSocketClient client, SocketMessage message)
         {
+#if DEBUG
             // テキストチャンネルのIDを取得
             var setting = JObject.Parse(File.ReadAllText(NS_.ExternalFiles.SETTINGS_FILE));
             var channelIdChat = ulong.Parse(setting[NS_.ExternalFiles.CHANNEL_ID_CHAT].ToString());
@@ -34,9 +34,9 @@ namespace SukonbuDiscordBot.Utils
                     // gofile-downloader.pyでダウンロードする
                     var psi = new ProcessStartInfo
                     {
-                        FileName = settingsFile[NS_.ExternalFiles.GOFILE_VENV_PYTHON_PATH].ToString(),
-                        Arguments = $"\"{settingsFile[NS_.ExternalFiles.GOFILE_SCRIPT_PATH]}\" \"{url}\"",
-                        WorkingDirectory = settingsFile[NS_.ExternalFiles.GOFILE_WORKING_DIRECTORY].ToString(),
+                        FileName = settingsFile[NS_.ExternalFiles.CUSTOM_VENV_PYTHON_PATH].ToString(),
+                        Arguments = $"\"{settingsFile[NS_.ExternalFiles.CUSTOM_SCRIPT_PATH]}\" \"{url}\"",
+                        WorkingDirectory = settingsFile[NS_.ExternalFiles.CUSTOM_WORKING_DIRECTORY].ToString(),
                         RedirectStandardOutput = true,
                         RedirectStandardError = true,
                         UseShellExecute = false,
@@ -71,7 +71,8 @@ namespace SukonbuDiscordBot.Utils
                     }
                 }
             }
+#endif
+            await TraceLog.Log(new LogMessage(LogSeverity.Error, "Trace", "ERROR: Function 'GofileDownload' is undefined."));
         }
     }
-#endif
 }
