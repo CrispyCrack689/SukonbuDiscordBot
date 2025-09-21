@@ -30,7 +30,7 @@ namespace SukonbuDiscordBot.Notification
             // 誕生日リスト取得
             string filePath = ExternalFiles.BIRTHDAYS_FILE;
             var userBirthdays = await ReadUserBirthdaysFromJsonAsync(filePath);
-
+            Debug.Assert(userBirthdays != null, nameof(userBirthdays) + " != null");
             // 本日誕生日の人を絞り込む
             var today = DateTime.Today;
             var birthdaysToday = userBirthdays
@@ -39,24 +39,23 @@ namespace SukonbuDiscordBot.Notification
 
             // チャネルを取得
             var channel = client.GetChannel(channelId) as SocketGuildChannel;
-            Debug.Assert(channel != null);
+            Debug.Assert(channel != null, nameof(channel) + " != null");
             // ユーザーを取得
-            //TODO:ボットしか取得できない　なぜ
-            var userIdsInChannel = channel.Users
-                .Select(u => u.Id.ToString())
-                .ToHashSet();
+            var guild = channel.Guild;
+            Debug.Assert(guild != null, nameof(guild) + " != null");
+            await guild.DownloadUsersAsync();
 
             // ボットがいるチャネルの中に該当者がいれば祝福
             foreach (var userBirthday in birthdaysToday)
             {
-                if (userIdsInChannel.Contains(userBirthday.UserId))
+                if (ulong.TryParse(userBirthday.UserId, out var userId))
                 {
-                    var user = channel.Users.FirstOrDefault(u => u.Id.ToString() == userBirthday.UserId);
+                    var user = guild.GetUser(userId);
                     if (user != null)
                     {
                         if (client.GetChannel(channelId) is IMessageChannel channelSend)
                         {
-                            await channelSend.SendMessageAsync($"Happy Birthday, {user.DisplayName}!");
+                            await channelSend.SendMessageAsync($"@everyone\n本日は{MentionUtils.MentionUser(user.Id)}さんの誕生日です、おめでとう！！");
                         }
                     }
                 }

@@ -36,8 +36,8 @@ public static class ExternalFiles
 public static class Constants
 {
     public const int START_DELAY = 1000;
-    public const int DAILY_TASK_HOUR = 13;
-    public const int DAILY_TASK_MINUTE = 07;
+    public const int DAILY_TASK_HOUR = 09;
+    public const int DAILY_TASK_MINUTE = 00;
 }
 
 namespace SukonbuDiscordBot
@@ -84,15 +84,10 @@ namespace SukonbuDiscordBot
             await Task.Delay(Constants.START_DELAY);
 
             // 定期実行タスク
-            // note: 今は試験機能
-#if DEBUG
-            Scheduler scheduler = new Scheduler();
-
-            // インフォチャンネルのIDを取得
             var settingsFile = JObject.Parse(File.ReadAllText(ExternalFiles.SETTINGS_FILE));
             var channelIdInfo = ulong.Parse(settingsFile[ExternalFiles.CHANNEL_ID_INFO].ToString());
+            var scheduler = new Scheduler();
             scheduler.ScheduleDailyTaskAsync(Constants.DAILY_TASK_HOUR, Constants.DAILY_TASK_MINUTE, async () => await Notification.BirthdayNotify.NotifyTodayIsMyBirthdayAsync(m_client, channelIdInfo));
-#endif
 
             // ループさせる
             await Task.Delay(-1);
