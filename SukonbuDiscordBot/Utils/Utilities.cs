@@ -53,7 +53,7 @@ namespace SukonbuDiscordBot.Utils
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"An error occurred while trying to terminate process (ID: {process.Id}, Name: {process.ProcessName}): {ex.Message}");
+                        Log.Trace(Discord.LogSeverity.Error, $"An error occurred while trying to terminate process (ID: {process.Id}, Name: {process.ProcessName}): {ex.Message}").Wait();
                     }
                 }
             }

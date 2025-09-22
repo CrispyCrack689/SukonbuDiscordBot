@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SukonbuDiscordBot.TextChat
 {
-    internal abstract class TextChatReply
+    internal class TextChatReply
     {
         //TODO:要改修
 

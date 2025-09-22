@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SukonbuDiscordBot.VoiceChat
 {
-    internal abstract class VoiceChatNotify
+    internal class VoiceChatNotify
     {
         private static readonly Dictionary<ulong, DateTime> m_voiceStartTimes = new Dictionary<ulong, DateTime>();
 

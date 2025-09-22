@@ -62,6 +62,7 @@ namespace SukonbuDiscordBot
                                | GatewayIntents.GuildMembers
             };
             m_client = new DiscordSocketClient(config);
+            Assert.IsNotNull(m_client);
 
             // カレントディレクトリからファイル読み込み
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
@@ -70,7 +71,9 @@ namespace SukonbuDiscordBot
             m_client.Log += (logMessage) => Log.Trace(logMessage.Severity, logMessage.ToString());
             m_client.UserVoiceStateUpdated += (user, before, after) => VoiceChatNotify.UserVoiceStateUpdateAsync(m_client, user, before, after);
             m_client.MessageReceived += (message) => TextChatReply.ChatBotAsync(m_client, message);
-            m_client.MessageReceived += (messageDebug) => Internals.GoFileDownload(m_client, messageDebug);
+#if DEBUG
+            m_client.MessageReceived += (messageDebug) => Internals.FileDownload(m_client, messageDebug);
+#endif
 
             // 設定ファイルを読み込む
             var tokenFile = JObject.Parse(File.ReadAllText(ExternalFiles.TOKEN_FILE));
