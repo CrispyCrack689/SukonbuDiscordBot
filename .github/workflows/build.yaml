@@ -24,11 +24,11 @@ jobs:
         run: nuget restore SukonbuDiscordBot.sln
 
       - name: Build solution
-        run: msbuild SukonbuDiscordBot.sln /p:Configuration=Debug
+        run: msbuild SukonbuDiscordBot.sln /p:Configuration=Release
 
       - name: Archive build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: SukonbuDiscordBot-${{ github.ref_name }}
           path: |
-            **/bin/Debug/
+            **/bin/x64/Debug/
