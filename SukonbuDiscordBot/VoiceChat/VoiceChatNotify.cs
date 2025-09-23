@@ -1,16 +1,15 @@
-﻿using Discord.WebSocket;
-using Discord;
+﻿using Discord;
+using Discord.WebSocket;
+using Newtonsoft.Json.Linq;
+using SukonbuDiscordBot.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-
-using SukonbuDiscordBot.Utils;
 
 namespace SukonbuDiscordBot.VoiceChat
 {
-    internal abstract class VoiceChatNotify
+    internal class VoiceChatNotify
     {
         private static readonly Dictionary<ulong, DateTime> m_voiceStartTimes = new Dictionary<ulong, DateTime>();
 
@@ -24,11 +23,11 @@ namespace SukonbuDiscordBot.VoiceChat
         /// <returns></returns>
         public static async Task UserVoiceStateUpdateAsync(DiscordSocketClient client, SocketUser user, SocketVoiceState before, SocketVoiceState after)
         {
-            var setting = JObject.Parse(File.ReadAllText(NS_.ExternalFiles.SETTINGS_FILE));
+            var setting = JObject.Parse(File.ReadAllText(ExternalFiles.SETTINGS_FILE));
             // ボイス通知チャンネルのIDを取得
-            var channelIdVoice = ulong.Parse(setting[NS_.ExternalFiles.CHANNEL_ID_VOICE].ToString());
+            var channelIdVoice = ulong.Parse(setting[ExternalFiles.CHANNEL_ID_VOICE].ToString());
             // 監視対象のボイスチャンネルを取得
-            var channelIdWatchVoice = setting[NS_.ExternalFiles.CHANNEL_ID_WATCH_VOICE].ToObject<List<ulong>>();
+            var channelIdWatchVoice = setting[ExternalFiles.CHANNEL_ID_WATCH_VOICE].ToObject<List<ulong>>();
 
             if (client.GetChannel(channelIdVoice) is IMessageChannel channel)
             {
@@ -76,7 +75,7 @@ namespace SukonbuDiscordBot.VoiceChat
                     if (!m_voiceStartTimes.TryGetValue(user.Id, out var startTime))
                     {
                         // 通話開始時間が取得できなかった
-                        await TraceLog.Log(new LogMessage(LogSeverity.Info, "Trace", $"Coudn't get chat start time: {before.VoiceChannel.Name}"));
+                        await Log.Trace(LogSeverity.Info, $"Coudn't get chat start time: {before.VoiceChannel.Name}");
                         return;
                     }
 

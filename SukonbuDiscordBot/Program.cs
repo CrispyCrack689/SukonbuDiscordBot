@@ -2,47 +2,42 @@
 using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
 using SukonbuDiscordBot.TextChat;
-using SukonbuDiscordBot.VoiceChat;
 using SukonbuDiscordBot.Utils;
+using SukonbuDiscordBot.VoiceChat;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace NS_
+/// <summary>
+/// 外部ファイルパスをまとめる
+/// </summary>
+public static class ExternalFiles
 {
-    /// <summary>
-    /// 外部ファイルパスをまとめる
-    /// </summary>
-    public static class ExternalFiles
-    {
-        public const string TOKEN_FILE = "data/token.json";
-        public const string SETTINGS_FILE = "data/settings.json";
-        public const string BIRTHDAYS_FILE = "data/birthdays.json";
+    public const string TOKEN_FILE = "data/token.json";
+    public const string SETTINGS_FILE = "data/settings.json";
+    public const string BIRTHDAYS_FILE = "data/birthdays.json";
 
-        public const string TOKEN = "BotToken";
+    public const string TOKEN = "BotToken";
 
-        public const string CHANNEL_ID_CHAT = "ChannelId_Chat";
-        public const string CHANNEL_ID_VOICE = "ChannelId_Voice";
-        public const string CHANNEL_ID_INFO = "ChannelId_Info";
+    public const string CHANNEL_ID_CHAT = "ChannelId_Chat";
+    public const string CHANNEL_ID_VOICE = "ChannelId_Voice";
+    public const string CHANNEL_ID_INFO = "ChannelId_Info";
 
-        public const string CHANNEL_ID_WATCH_VOICE = "ChannelId_WatchVoice";
+    public const string CHANNEL_ID_WATCH_VOICE = "ChannelId_WatchVoice";
 
-#if DEBUG
-        public const string GOFILE_WORKING_DIRECTORY = "GoFile_WorkingDirectory";
-        public const string GOFILE_SCRIPT_PATH = "GoFile_ScriptPath";
-        public const string GOFILE_VENV_PYTHON_PATH = "GoFile_VenvPythonPath";
-#endif
-    };
+    public const string CUSTOM_WORKING_DIRECTORY = "Custom_WorkingDirectory";
+    public const string CUSTOM_SCRIPT_PATH = "Custom_ScriptPath";
+    public const string CUSTOM_VENV_PYTHON_PATH = "Custom_VenvPythonPath";
+};
 
-    /// <summary>
-    /// 定数をまとめる
-    /// </summary>
-    public static class Constants
-    {
-        public const int START_DELAY = 1000;
-        public const int DAILY_TASK_HOUR = 13;
-        public const int DAILY_TASK_MINUTE = 07;
-    }
+/// <summary>
+/// 定数をまとめる
+/// </summary>
+public static class Constants
+{
+    public const int START_DELAY = 1000;
+    public const int DAILY_TASK_HOUR = 09;
+    public const int DAILY_TASK_MINUTE = 00;
 }
 
 namespace SukonbuDiscordBot
@@ -61,45 +56,41 @@ namespace SukonbuDiscordBot
             {
                 LogLevel = LogSeverity.Info,
                 GatewayIntents = GatewayIntents.Guilds
-                    | GatewayIntents.GuildMessages
-                    | GatewayIntents.GuildVoiceStates
-                    | GatewayIntents.MessageContent
-                    | GatewayIntents.GuildMembers
+                               | GatewayIntents.GuildMessages
+                               | GatewayIntents.GuildVoiceStates
+                               | GatewayIntents.MessageContent
+                               | GatewayIntents.GuildMembers
             };
             m_client = new DiscordSocketClient(config);
+            Assert.IsNotNull(m_client);
 
             // カレントディレクトリからファイル読み込み
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
 
             // イベントハンドラを設定
-            m_client.Log += TraceLog.Log;
+            m_client.Log += (logMessage) => Log.Trace(logMessage.Severity, logMessage.ToString());
             m_client.UserVoiceStateUpdated += (user, before, after) => VoiceChatNotify.UserVoiceStateUpdateAsync(m_client, user, before, after);
             m_client.MessageReceived += (message) => TextChatReply.ChatBotAsync(m_client, message);
 #if DEBUG
-            m_client.MessageReceived += (messageDebug) => Internals.GoFileDownload(m_client, messageDebug);
+            m_client.MessageReceived += (messageDebug) => Internals.FileDownload(m_client, messageDebug);
 #endif
 
             // 設定ファイルを読み込む
-            var tokenFile = JObject.Parse(File.ReadAllText(NS_.ExternalFiles.TOKEN_FILE));
-            var token = tokenFile[NS_.ExternalFiles.TOKEN].ToString();
+            var tokenFile = JObject.Parse(File.ReadAllText(ExternalFiles.TOKEN_FILE));
+            var token = tokenFile[ExternalFiles.TOKEN].ToString();
 
             // ログイン
             await m_client.LoginAsync(TokenType.Bot, token);
             await m_client.StartAsync();
 
             // 準備完了するまで待機
-            await Task.Delay(NS_.Constants.START_DELAY);
+            await Task.Delay(Constants.START_DELAY);
 
             // 定期実行タスク
-            // note: 今は試験機能
-#if DEBUG
-            Scheduler scheduler = new Scheduler();
-
-            // インフォチャンネルのIDを取得
-            var settingsFile = JObject.Parse(File.ReadAllText(NS_.ExternalFiles.SETTINGS_FILE));
-            var channelIdInfo = ulong.Parse(settingsFile[NS_.ExternalFiles.CHANNEL_ID_INFO].ToString());
-            scheduler.ScheduleDailyTaskAsync(NS_.Constants.DAILY_TASK_HOUR, NS_.Constants.DAILY_TASK_MINUTE, async () => await Notification.BirthdayNotify.NotifyTodayIsMyBirthdayAsync(m_client, channelIdInfo));
-#endif
+            var settingsFile = JObject.Parse(File.ReadAllText(ExternalFiles.SETTINGS_FILE));
+            var channelIdInfo = ulong.Parse(settingsFile[ExternalFiles.CHANNEL_ID_INFO].ToString());
+            var scheduler = new Scheduler();
+            scheduler.ScheduleDailyTaskAsync(Constants.DAILY_TASK_HOUR, Constants.DAILY_TASK_MINUTE, async () => await Notification.BirthdayNotify.NotifyTodayIsMyBirthdayAsync(m_client, channelIdInfo));
 
             // ループさせる
             await Task.Delay(-1);

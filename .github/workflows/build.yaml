@@ -31,4 +31,4 @@ jobs:
         with:
           name: SukonbuDiscordBot-${{ github.ref_name }}
           path: |
-            **/bin/Release/
+            **/bin/x64/Debug/

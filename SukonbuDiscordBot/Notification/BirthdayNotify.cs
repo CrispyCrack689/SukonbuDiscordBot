@@ -1,13 +1,12 @@
-﻿using System;
+﻿using Discord;
+using Discord.WebSocket;
+using Newtonsoft.Json;
+using SukonbuDiscordBot.Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-
-using Discord;
-using Discord.WebSocket;
-using System.Diagnostics;
 
 namespace SukonbuDiscordBot.Notification
 {
@@ -28,9 +27,9 @@ namespace SukonbuDiscordBot.Notification
         public static async Task NotifyTodayIsMyBirthdayAsync(DiscordSocketClient client, ulong channelId)
         {
             // 誕生日リスト取得
-            string filePath = NS_.ExternalFiles.BIRTHDAYS_FILE;
+            string filePath = ExternalFiles.BIRTHDAYS_FILE;
             var userBirthdays = await ReadUserBirthdaysFromJsonAsync(filePath);
-
+            Assert.IsNotNull(userBirthdays, nameof(userBirthdays));
             // 本日誕生日の人を絞り込む
             var today = DateTime.Today;
             var birthdaysToday = userBirthdays
@@ -39,24 +38,23 @@ namespace SukonbuDiscordBot.Notification
 
             // チャネルを取得
             var channel = client.GetChannel(channelId) as SocketGuildChannel;
-            Debug.Assert(channel != null);
+            Assert.IsNotNull(channel, nameof(channel));
             // ユーザーを取得
-            //TODO:ボットしか取得できない　なぜ
-            var userIdsInChannel = channel.Users
-                .Select(u => u.Id.ToString())
-                .ToHashSet();
+            var guild = channel.Guild;
+            Assert.IsNotNull(guild, nameof(guild));
+            await guild.DownloadUsersAsync();
 
             // ボットがいるチャネルの中に該当者がいれば祝福
             foreach (var userBirthday in birthdaysToday)
             {
-                if (userIdsInChannel.Contains(userBirthday.UserId))
+                if (ulong.TryParse(userBirthday.UserId, out var userId))
                 {
-                    var user = channel.Users.FirstOrDefault(u => u.Id.ToString() == userBirthday.UserId);
+                    var user = guild.GetUser(userId);
                     if (user != null)
                     {
                         if (client.GetChannel(channelId) is IMessageChannel channelSend)
                         {
-                            await channelSend.SendMessageAsync($"Happy Birthday, {user.DisplayName}!");
+                            await channelSend.SendMessageAsync($"@everyone\n本日は{MentionUtils.MentionUser(user.Id)}さんの誕生日です、おめでとう！！");
                         }
                     }
                 }
