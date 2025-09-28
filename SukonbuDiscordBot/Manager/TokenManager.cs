@@ -68,7 +68,9 @@ namespace SukonbuDiscordBot.Manager
             {
                 JObject tokenFile = JObject.Parse(File.ReadAllText(ExternalFiles.TOKEN_FILE));
                 m_botToken = tokenFile[ExternalFiles.TOKEN].ToString();
+                Assert.IsNotNull(m_botToken);
                 m_appId = tokenFile[ExternalFiles.APP_ID].ToObject<long>();
+                Assert.IsNotNull(m_appId);
 
                 m_isInitialized = true;
                 Log.Trace(LogSeverity.Info, "TokenManager initialized successfully.");
