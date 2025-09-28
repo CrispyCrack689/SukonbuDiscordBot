@@ -1,11 +1,11 @@
-﻿using Discord;
-using Discord.WebSocket;
-using Newtonsoft.Json.Linq;
-using SukonbuDiscordBot.Utils;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using Discord;
+using Discord.WebSocket;
+using SukonbuDiscordBot.Utils;
 
 namespace SukonbuDiscordBot.VoiceChat
 {

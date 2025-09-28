@@ -3,7 +3,6 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using Discord;
 using SukonbuDiscordBot.Utils;
-using System.Reflection;
 
 namespace SukonbuDiscordBot.Manager
 {
