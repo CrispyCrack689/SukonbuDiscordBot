@@ -45,15 +45,17 @@ namespace SukonbuDiscordBot.VoiceChat
                     }
 
                     // すでにユーザーが通話中の場合は無視
+                    // すでに通話中の場合は開始時間を更新しない
                     if (after.VoiceChannel.ConnectedUsers.Count > 1)
                     {
                         return;
                     }
 
-                    m_voiceStartTimes[user.Id] = DateTime.Now;
+                    // チャンネルIDをキーにして開始時間を保存
+                    m_voiceStartTimes[after.VoiceChannel.Id] = DateTime.Now;
 
                     var channelName = after.VoiceChannel.Name;
-                    var startTime = m_voiceStartTimes[user.Id].ToString("yyyy/MM/dd HH:mm:ss");
+                    var startTime = m_voiceStartTimes[after.VoiceChannel.Id].ToString("yyyy/MM/dd HH:mm:ss");
 
                     var embed = new EmbedBuilder()
                         .WithTitle("通話開始")
@@ -72,7 +74,13 @@ namespace SukonbuDiscordBot.VoiceChat
 
                     var endTime = DateTime.Now;
 
-                    if (!m_voiceStartTimes.TryGetValue(user.Id, out var startTime))
+                    // 通話チャンネルにまだ人がいる場合は通知しない
+                    if (before.VoiceChannel.ConnectedUsers.Count > 0)
+                    {
+                        return;
+                    }
+
+                    if (!m_voiceStartTimes.TryGetValue(before.VoiceChannel.Id, out var startTime))
                     {
                         // 通話開始時間が取得できなかった
                         await Log.Trace(LogSeverity.Info, $"Coudn't get chat start time: {before.VoiceChannel.Name}");
@@ -81,7 +89,7 @@ namespace SukonbuDiscordBot.VoiceChat
 
                     var channelName = before.VoiceChannel.Name;
                     var duration = endTime - startTime;
-                    m_voiceStartTimes.Remove(user.Id);
+                    m_voiceStartTimes.Remove(before.VoiceChannel.Id);
 
                     // 2桁表示にする
                     var durationHours = duration.Hours.ToString();
