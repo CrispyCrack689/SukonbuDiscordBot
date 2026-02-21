@@ -1,6 +1,8 @@
 ﻿using System;
+
 using Discord;
 using Discord.WebSocket;
+
 using SukonbuDiscordBot.Utils;
 
 namespace SukonbuDiscordBot.Manager

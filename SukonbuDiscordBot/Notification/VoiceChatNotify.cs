@@ -2,9 +2,11 @@
 using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+
 using Discord;
 using Discord.WebSocket;
+using Newtonsoft.Json.Linq;
+
 using SukonbuDiscordBot.Utils;
 
 namespace SukonbuDiscordBot.VoiceChat

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
-using Newtonsoft.Json.Linq;
+
 using Discord;
+using Newtonsoft.Json.Linq;
+
 using SukonbuDiscordBot.Utils;
 
 namespace SukonbuDiscordBot.Manager

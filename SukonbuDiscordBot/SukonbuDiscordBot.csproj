@@ -138,7 +138,7 @@
     <Compile Include="Utils\Scheduler.cs" />
     <Compile Include="Utils\Log.cs" />
     <Compile Include="Utils\Utilities.cs" />
-    <Compile Include="VoiceChat\VoiceChatNotify.cs" />
+    <Compile Include="Notification\VoiceChatNotify.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

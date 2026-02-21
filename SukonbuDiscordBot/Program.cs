@@ -2,8 +2,10 @@
 using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+
 using Discord;
 using Discord.WebSocket;
+
 using SukonbuDiscordBot.Manager;
 using SukonbuDiscordBot.TextChat;
 using SukonbuDiscordBot.Utils;

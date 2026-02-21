@@ -1,8 +1,10 @@
 ﻿using System.Threading.Tasks;
-using Newtonsoft.Json;
+
 using Discord;
 using Discord.Net;
 using Discord.WebSocket;
+using Newtonsoft.Json;
+
 using SukonbuDiscordBot.Manager;
 using SukonbuDiscordBot.Utils;
 
